@@ -1,6 +1,7 @@
 from pipeline import *
 from random import randint, seed
 
+
 def kmp_table(s):
     T = [0 for _ in range(len(s) + 1)]
     T[0] = -1
@@ -51,58 +52,70 @@ if __name__ == '__main__':
     ############################### Window Buttons & Canvas ##############################
     ######################################################################################
 
-    frameButtons = Frame(window, bd=1, relief=SUNKEN, padx=7, pady=5)
+    frameButtons = Frame(window, bd=1, relief=SUNKEN, padx=7, pady=5, bg="#687382")
     frameButtons.pack(side=TOP)
 
-    A = Button(frameButtons, text='Step Forward',
-               command=lambda: next_step(blocs, lines, strlines)).pack(side=LEFT)
-    B = Button(frameButtons, text='RUN', command=lambda: start(blocs, lines, dic, lambda: randint(0, 100) >= prob.get() * 100)).pack(side=LEFT)
-    C = Button(frameButtons, text='PAUSE', command=lambda: stop()).pack(side=LEFT)
-    D = Button(frameButtons, text='RESET', command=reset).pack(side=LEFT)
+    A = Button(frameButtons, text='ONE STEP',
+               command=lambda: next_step(blocs, lines, strlines), highlightthickness=0, bg="#2aa1d3", fg="#ffffff",
+               font="Mono 12 bold").pack(side=LEFT,
+                                         padx=3)
+    B = Button(frameButtons, text='RUN',
+               command=lambda: start(blocs, lines, dic, lambda: randint(0, 100) >= prob.get() * 100),
+               highlightthickness=0, bg="#2aa1d3", fg="white", font="Mono 12 bold").pack(side=LEFT, padx=3)
+    C = Button(frameButtons, text='PAUSE', command=lambda: stop(), highlightthickness=0, bg="#2aa1d3", fg="white",
+               font="Mono 12 bold").pack(side=LEFT, padx=3)
+    D = Button(frameButtons, text='RESET', command=reset, highlightthickness=0, bg="#d32a2f", fg="white",
+               font="Mono 12 bold").pack(side=LEFT, padx=3)
 
-    results = Frame(window, bd=1, relief=SUNKEN, padx=7, pady=5)
+    results = Frame(window, bd=1, padx=7, pady=5, bg="#687382")
     results.pack(side=TOP, expand=True)
 
-    lstall = Label(results, textvariable=infosGraphic['staled']).pack(side=TOP)
-    li = Label(results, textvariable=infosGraphic['i']).pack(side=TOP)
-    lmem = Label(results, textvariable=infosGraphic['mem']).pack(side=TOP)
-    lnb = Label(results, textvariable=infosGraphic['nb']).pack(side=TOP)
-    tmp = Label(results, textvariable=infosGraphic['cycles']).pack(side=TOP)
+    lstall = Label(results, textvariable=infosGraphic['staled'], bg="#687382").pack(side=TOP)
+    li = Label(results, textvariable=infosGraphic['i'], bg="#687382").pack(side=TOP)
+    lmem = Label(results, textvariable=infosGraphic['mem'], bg="#687382").pack(side=TOP)
+    lnb = Label(results, textvariable=infosGraphic['nb'], bg="#687382").pack(side=TOP)
+    tmp = Label(results, textvariable=infosGraphic['cycles'], bg="#687382").pack(side=TOP)
 
-    resultsCPU = Frame(window, bd=1, relief=SUNKEN, padx=7, pady=5)
+    resultsCPU = Frame(window, bd=1, padx=7, pady=5, bg="#687382")
     resultsCPU.pack(side=TOP, expand=True)
 
-    tmp = Label(resultsCPU, text="CPU stats")
+    tmp = Label(resultsCPU, text="CPU stats", bg="#687382")
     tmp.pack(side=TOP)
 
     for cpu_cnt in cpuGraphic[:-1]:
-        Label(resultsCPU, textvariable=cpu_cnt, padx=5, pady=3).pack(side=TOP, expand=True)
+        Label(resultsCPU, textvariable=cpu_cnt, padx=5, pady=3, bg="#687382").pack(side=TOP, expand=True)
 
-    bufferCPU = Frame(window, bd=1, relief=SUNKEN, padx=7, pady=5)
+    bufferCPU = Frame(window, bd=1, padx=7, pady=5, bg="#687382")
     bufferCPU.pack(side=TOP, expand=True)
 
-    Label(bufferCPU, text="CPU Buffer Out").pack(side=TOP)
-    Label(bufferCPU, textvariable=cpuGraphic[-1], padx=5, pady=2).pack(side=LEFT, expand=True)
+    Label(bufferCPU, text="CPU Buffer Out", bg="#687382").pack(side=TOP)
+    Label(bufferCPU, textvariable=cpuGraphic[-1], padx=5, pady=2, bg="#687382").pack(side=LEFT, expand=True)
 
-    fconfig = Frame(window, bd=1, relief=SUNKEN, padx=7, pady=5)
+    fconfig = Frame(window, bd=1, padx=7, pady=5, bg="#687382")
     fconfig.pack(side=TOP, expand=True)
 
     Scale(fconfig, orient='horizontal', from_=0, to=100,
-               variable=speed,
-               label='Speed:').pack(side=LEFT, expand=True)
+          variable=speed,
+          highlightthickness=0,
+          label='Speed:', bg="#687382").pack(side=LEFT)
     Scale(fconfig, orient='horizontal', from_=1, to=5,
-               variable=infos['memcost'],
-               label='Mem cost:').pack(side=LEFT, expand=True)
+          highlightthickness=0,
+          variable=infos['memcost'],
+          label='Mem cost:', bg="#687382").pack(side=LEFT)
 
-    otherConfig = Frame(window, bd=1, relief=SUNKEN, padx=7, pady=5)
+    otherConfig = Frame(window, bd=1, padx=7, pady=5, bg="#687382")
     otherConfig.pack(side=TOP, expand=True)
-    Checkbutton(otherConfig, text='Register Hazards', variable=decalD).pack(side=LEFT, expand=True)
-    Checkbutton(otherConfig, text='Memory Hazards', variable=decalM).pack(side=LEFT, expand=True)
+    Checkbutton(otherConfig, text='Register Hazards', variable=decalD,
+                highlightthickness=0, bg="#687382").pack(side=LEFT, expand=True)
+    Checkbutton(otherConfig, text='Memory Hazards', variable=decalM, highlightthickness=0, bg="#687382").pack(side=LEFT,
+                                                                                                              expand=True)
 
-    fdebug = Frame(window, bd=1, relief=SUNKEN, padx=7, pady=5)
+    fdebug = Frame(window, bd=1, padx=7, pady=5, bg="#687382")
     fdebug.pack(side=TOP, expand=True)
-    check = Checkbutton(fdebug, text='Debug', variable=DEBUG).pack(side=LEFT, expand=True)
-    check = Checkbutton(fdebug, text='Structural dep', variable=STRUCT_DEP).pack(side=BOTTOM, expand=True)
+    check = Checkbutton(fdebug, text='Debug', variable=DEBUG, highlightthickness=0, bg="#687382").pack(side=LEFT,
+                                                                                                       expand=True)
+    check = Checkbutton(fdebug, text='Structural dep', variable=STRUCT_DEP, highlightthickness=0, bg="#687382").pack(
+        side=BOTTOM, expand=True)
 
     draw_asm = lambda: draw_asm_canvas(strlines)
     draw_asm()

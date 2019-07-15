@@ -23,9 +23,11 @@ from parser import parse_file
 base_title = "Simul RISC with ASM"
 window = Tk()
 window.title(base_title)
+window.configure(background="#464956")
 
-CVS_WIDTH = 300
-canvas = Canvas(window, width=CVS_WIDTH, height=window.maxsize()[1]-50, bg='white')
+
+CVS_WIDTH = 500
+canvas = Canvas(window, width=CVS_WIDTH, height=window.maxsize()[1]-50, bg='#7c818b', highlightthickness=0)
 canvas.pack(side=LEFT, padx=0, pady=0)
 
 infos = {'i': 0, 'nb': 0, 'staled': 0, 'mem': 0, 'r': [], 'memcost': IntVar(value=1), "cycles": IntVar()}
@@ -284,6 +286,16 @@ def construct_blocs(path):
 
 posLines = dict()
 
+def get_str_state_pipeline(ins):
+    pip = pipeline[ins]
+    if pip[0] == 999:
+        return ""
+    symb = ['F', 'D', 'E', 'M', 'W']
+    tostr = pip[1][len(pipeline) - 1 - ins + pipelineStep]
+    if len(tostr) == 0:
+        return symb[len(pipeline) - 1 - ins + pipelineStep]
+    return tostr
+
 def draw_asm_canvas(lines):
     global window
     global canvas
@@ -292,40 +304,43 @@ def draw_asm_canvas(lines):
     if len(posLines) == 0:
         y = 15
         for i in range(len(lines)):
-            x = 100
+            x = 50
             if lines[i][0] == '.':
                 x -= 50
             posLines[i] = (x, y)
-            y += 12
+            y += 14
 
-    canvas.create_line(150, 10, 150, posLines[len(lines) - 1][1] + 10)
+    #canvas.create_line(150, 10, 150, posLines[len(lines) - 1][1] + 10)
+
+    maxi0 = max([8*len(l[0]) for l in list(map(lambda i: i.split(" "), lines))])
+    maxi1 = max([8*len(l[1]) for l in list(map(lambda i: i.split(" "), lines))])
+
+    print("MAXI0=",maxi0)
+
     for i in range(len(lines)):
         tpos = posLines[i]
         color = "black"
         if infos['i'] == i:
             color = 'white'
-            canvas.create_rectangle(20, tpos[1] - 6, 150, tpos[1] + 6, fill="red")
+            #canvas.create_rectangle(20, tpos[1] - 6, 150, tpos[1] + 6, fill="red")
+
         canvas.create_text(10, tpos[1], fill="black", font="Mono 7", justify=LEFT, text=str(i))
-        canvas.create_text(tpos[0], tpos[1], fill=color, font="Mono 10", justify=LEFT, text=lines[i])
-        canvas.create_line(10, tpos[1] + 6, 260, tpos[1] + 6, fill='gray70')
+        l = lines[i].split(" ")
+        for op in range(len(l)):
+            if not l[op]:
+                continue
+            canvas.create_rectangle(tpos[0]-4+((maxi0+10)*(op>=1))+((maxi1+10)*(op>=2)), tpos[1] - 6, tpos[0]+8*len(l[op])+2+((maxi0+10)*(op>=1))+((maxi1+10)*(op>=2)), tpos[1] + 7, fill="#335566", width=0)
+            canvas.create_text(tpos[0]+((maxi0+10)*(op>=1))+((maxi1+10)*(op>=2)), tpos[1], fill=color, font="Mono 10", anchor="w", text=l[op])
+        #canvas.create_line(10, tpos[1] + 6, 260, tpos[1] + 6, fill='gray70')
 
-        tostr = "0"
-        if i in stalledPerIns:
-            tostr = str(stalledPerIns[i])
-
+        tostr = str(stalledPerIns[i]) if i in stalledPerIns else "0"
         canvas.create_text(250, tpos[1], fill="black", font="Mono 9", justify=RIGHT, text=tostr)
 
     for ins in range(len(pipeline)):
-        pip = pipeline[ins]
-        if pip[0] == 999:
+        tostr = get_str_state_pipeline(ins)
+        if not tostr:
             continue
-        pos = posLines[pip[0]]
-
-        symb = ['F', 'D', 'E', 'M', 'W']
-
-        tostr = pip[1][len(pipeline) - 1 - ins + pipelineStep]
-        if len(tostr) == 0:
-            tostr = symb[len(pipeline) - 1 - ins + pipelineStep]
+        pos = posLines[pipeline[ins][0]]
         canvas.create_text(180, pos[1], fill="black", font="Mono 10", justify=LEFT, text=tostr)
 
     maj_graphical_cpu()
