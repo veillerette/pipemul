@@ -25,7 +25,7 @@ window = Tk()
 window.title(base_title)
 
 CVS_WIDTH = 300
-canvas = Canvas(window, width=CVS_WIDTH, height=800, bg='white')
+canvas = Canvas(window, width=CVS_WIDTH, height=window.maxsize()[1]-50, bg='white')
 canvas.pack(side=LEFT, padx=0, pady=0)
 
 infos = {'i': 0, 'nb': 0, 'staled': 0, 'mem': 0, 'r': [], 'memcost': IntVar(value=1), "cycles": IntVar()}
@@ -305,8 +305,8 @@ def draw_asm_canvas(lines):
         if infos['i'] == i:
             color = 'white'
             canvas.create_rectangle(20, tpos[1] - 6, 150, tpos[1] + 6, fill="red")
-        canvas.create_text(10, tpos[1], fill="black", font="Mono 8", justify=LEFT, text=str(i))
-        canvas.create_text(tpos[0], tpos[1], fill=color, font="Mono 11", justify=LEFT, text=lines[i])
+        canvas.create_text(10, tpos[1], fill="black", font="Mono 7", justify=LEFT, text=str(i))
+        canvas.create_text(tpos[0], tpos[1], fill=color, font="Mono 10", justify=LEFT, text=lines[i])
         canvas.create_line(10, tpos[1] + 6, 260, tpos[1] + 6, fill='gray70')
 
         tostr = "0"
@@ -326,7 +326,7 @@ def draw_asm_canvas(lines):
         tostr = pip[1][len(pipeline) - 1 - ins + pipelineStep]
         if len(tostr) == 0:
             tostr = symb[len(pipeline) - 1 - ins + pipelineStep]
-        canvas.create_text(180, pos[1], fill="black", font="Mono 11", justify=LEFT, text=tostr)
+        canvas.create_text(180, pos[1], fill="black", font="Mono 10", justify=LEFT, text=tostr)
 
     maj_graphical_cpu()
 
