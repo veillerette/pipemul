@@ -209,7 +209,7 @@ class Processor:
         pass
 
     def call(self, fct):
-        args = [self.reg_get("si"), self.reg_get("dx"), self.reg_get("cx")]
+        args = [self.reg_get("di"), self.reg_get("si"), self.reg_get("dx"), self.reg_get("cx")]
         args += [self.reg_get(str(j)+"x") for j in range(8,15) if str(j)+"x" in self.registers]
 
         if fct == "printf":
@@ -220,7 +220,8 @@ class Processor:
         self.i += 1
 
     def fct_printf(self, args):
-        st = self.strings[self.reg_get("rdi")]
+        st = self.strings[args[0]]
+        args = args[1:]
         tmp = st.split("%")[1:]
         for j in range(len(st.split("%")[1:])):
             if tmp[j][0] == 's': args[j] = self.strings[args[j]]
