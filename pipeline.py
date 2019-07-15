@@ -14,10 +14,8 @@
 #	- line : ligne ASM simplifiée correspondante
 
 from tkinter import *
-from tools import *
-from parser import *
+from parsing import *
 from processor import Processor
-from parser import parse_file
 
 
 base_title = "Simul RISC with ASM"
