@@ -1,3 +1,6 @@
+from random import randint,seed
+import string
+
 # return False if no reg, else the id of reg
 def is_reg(op):
     if len(op) > 3 or len(op) < 2:

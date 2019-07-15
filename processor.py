@@ -2,7 +2,7 @@ from tools import *
 
 class Processor:
     VALUES_RESERVED = 100
-    DEBUG = False
+    DEBUG = True
     DEFAULT_MAX_MEMORY = 10000
     def __init__(self, memory_size = DEFAULT_MAX_MEMORY):
         self.registers = {}
@@ -27,6 +27,7 @@ class Processor:
         self.dic = dict(mov=lambda a, b: self.action(a, b, self.reg_set, self.mem_set),
                         add=lambda a, b: self.action(a, b, self.reg_add, self.mem_add),
                         sub=lambda a, b: self.action(a, b, self.reg_sub, self.mem_sub),
+                        mul=lambda a, b: self.action(a, b, self.reg_mul, self.mem_mul),
                         jmp=lambda a, b: self.jmp(self.dic_flags[is_flag(a)] + 1), cmp=lambda a, b: self.reg_cmp(a, b),
                         jcmp=lambda a, b: self.je(self.dic_flags[is_flag(a)]),
                         jl=lambda a, b: self.jl(self.dic_flags[is_flag(a)]),
@@ -41,7 +42,8 @@ class Processor:
 
     def execute(self):
         ins = self.lines[self.i]
-        print("[CPU] execute ", ins)
+        if Processor.DEBUG:
+            print("[CPU] execute ", ins)
 
         if ins[0][0] == '.':
             self.i += 1
@@ -135,6 +137,12 @@ class Processor:
     def reg_sub(self, reg, val):
         self.reg_set(reg, self.reg_get(reg) - val)
 
+    def reg_mul(self, reg, val):
+        self.reg_set(reg, self.reg_get(reg) * val);
+
+    def reg_mulreg(self, A, B):
+        self.reg_mul(A, self.reg_get(B));
+
     def reg_cmp(self, regA, regB):
         self.flags['cmp'] = (self.reg_get(regA) - self.reg_get(regB))
         self.i += 1
@@ -151,6 +159,9 @@ class Processor:
 
     def mem_sub(self, i, val):
         self.mem_set(i, self.mem_get(i) - val)
+
+    def mem_mul(self, i, val):
+        self.mem_set(i, self.mem_get(i) * val);
 
     def out(self):
         print(self.output)
