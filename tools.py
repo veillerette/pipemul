@@ -3,13 +3,13 @@ import string
 
 # return False if no reg, else the id of reg
 def is_reg(op):
-    if len(op) > 3 or len(op) < 2:
+    if len(op) > 4 or len(op) < 2:
         return False
     if op[-1] != 'i' and op[-1] != 'x' and op[-1] != 'p':
         return False
     if "PTR" in op:
         return False
-    return op[-2:]
+    return op[1:]
 
 
 def is_mem(op):

@@ -210,6 +210,7 @@ class Processor:
 
     def call(self, fct):
         args = [self.reg_get("si"), self.reg_get("dx"), self.reg_get("cx")]
+        args += [self.reg_get(str(j)+"x") for j in range(8,15) if str(j)+"x" in self.registers]
 
         if fct == "printf":
             self.fct_printf(args)
