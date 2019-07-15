@@ -76,10 +76,8 @@ def replace_multi_instr(lines):
                 r.append(i)
     return r
 
-
 def parse_file(s):
     return [parse_line(i) for i in simplify_asm_file(s)]
-
 
 def parse_line(line):
     bloc = line.split(",")
@@ -87,7 +85,6 @@ def parse_line(line):
     if len(bloc) > 1:
         r.append(bloc[1].strip())
     return r
-
 
 def transform_bloc(line):
     """
