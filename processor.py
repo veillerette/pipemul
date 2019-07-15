@@ -1,12 +1,15 @@
 from tools import *
 
+
 class Processor:
     VALUES_RESERVED = 100
     DEBUG = True
     DEFAULT_MAX_MEMORY = 10000
-    def __init__(self, memory_size = DEFAULT_MAX_MEMORY):
+
+    def __init__(self, memory_size=DEFAULT_MAX_MEMORY):
         self.registers = {}
-        self.memory = [0 for _ in range(memory_size + Processor.VALUES_RESERVED)]  # 100 values are reserved for variables
+        self.memory = [0 for _ in
+                       range(memory_size + Processor.VALUES_RESERVED)]  # 100 values are reserved for variables
         self.flags = {}
         self.i = 0  # instruction pointer
         self.output = ""
@@ -47,7 +50,7 @@ class Processor:
 
         if ins[0][0] == '.':
             self.i += 1
-            #self.execute()
+            # self.execute()
             return
 
         # to prevent anomaly
@@ -69,7 +72,7 @@ class Processor:
         self.reg_set("cx", len(pattern))
         for i in range(len(pattern)):
             self.mem_set(i + self.memory_used + len(text), ord(pattern[i]))
-        self.reg_set("dx", self.memory_used  + len(text))
+        self.reg_set("dx", self.memory_used + len(text))
 
         self.memory_used += len(text) + len(pattern)
 
@@ -207,18 +210,31 @@ class Processor:
 
     def call(self, fct):
         args = [self.reg_get("si"), self.reg_get("dx"), self.reg_get("cx")]
+
+        if fct == "printf":
+            self.fct_printf(args)
+        else:
+            print("Call", fct, "unsupported")
+
+        self.i += 1
+
+    def fct_printf(self, args):
         st = self.strings[self.reg_get("rdi")]
+        tmp = st.split("%")[1:]
+        for j in range(len(st.split("%")[1:])):
+            if tmp[j][0] == 's': args[j] = self.strings[args[j]]
         self.output = st % tuple(args[:st.count("%")])
         print("[OUT] ", self.output)
-        self.i += 1
 
     def debug(self):
         if not Processor.DEBUG:
             return
         print("[CPU] Registers :", self.registers)
         print("[CPU] Flags :", self.flags)
-        print("[CPU] Reserved Memory [0..",Processor.VALUES_RESERVED-1,"] :", self.memory[:Processor.VALUES_RESERVED])
-        print("[CPU] Memory [",Processor.VALUES_RESERVED,"..",Processor.VALUES_RESERVED+50,"] :", self.memory[Processor.VALUES_RESERVED:Processor.VALUES_RESERVED+50])
+        print("[CPU] Reserved Memory [0..", Processor.VALUES_RESERVED - 1, "] :",
+              self.memory[:Processor.VALUES_RESERVED])
+        print("[CPU] Memory [", Processor.VALUES_RESERVED, "..", Processor.VALUES_RESERVED + 50, "] :",
+              self.memory[Processor.VALUES_RESERVED:Processor.VALUES_RESERVED + 50])
         print("[CPU] Output buffer : ", self.output)
         print("[CPU] Instruction pointer :", self.i)
         print("[CPU] Counters :", self.counters)
