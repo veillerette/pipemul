@@ -29,8 +29,8 @@ if __name__ == '__main__':
     blocs, lines, dic, strs = construct_blocs(sys.argv[1])
     window.title(base_title + " : " + sys.argv[1])
 
-    strlines = list(map(lambda i: ' '.join(list(map(lambda j: str(j), i))), lines))
-
+    strlines = list(map(lambda i: ' '.join(list(map(lambda j: refactor_op(str(j)), i))), lines))
+    print("STR = ", strlines)
     ######################## TEXT INJECTION ########################
     ### 2 <= TEXT_SIZE + |pattern| + 1 < Processor.DEFAULT_MAX_MEMORY
     pattern = "AAAAAAA"
@@ -54,16 +54,19 @@ if __name__ == '__main__':
     frameButtons = Frame(window, bd=1, relief=SUNKEN, padx=7, pady=5, bg="#687382")
     frameButtons.pack(side=TOP)
 
+    testB = Button(window, text="TEST WIN", command=lambda: Tk()).pack(side=LEFT, expand="True")
+
     A = Button(frameButtons, text='ONE STEP',
-               command=lambda: next_step(blocs, lines, strlines), highlightthickness=0, bg="#2aa1d3", fg="#ffffff",
+               command=lambda: next_step(blocs, lines, strlines), highlightthickness=0, bg="#2aa1d3", highlightbackground="#27b9f3", activebackground="#27b9f3", fg="#ffffff",
                font="Mono 12 bold").pack(side=LEFT,
                                          padx=3)
     B = Button(frameButtons, text='RUN',
                command=lambda: start(blocs, lines, dic, lambda: randint(0, 100) >= prob.get() * 100),
-               highlightthickness=0, bg="#2aa1d3", fg="white", font="Mono 12 bold").pack(side=LEFT, padx=3)
-    C = Button(frameButtons, text='PAUSE', command=lambda: stop(), highlightthickness=0, bg="#2aa1d3", fg="white",
+               highlightthickness=0, bg="#2aa1d3", highlightbackground="#27b9f3", activebackground="#27b9f3", fg="white", font="Mono 12 bold").pack(side=LEFT, padx=3)
+    C = Button(frameButtons, text='PAUSE', command=lambda: stop(), highlightthickness=0, bg="#2aa1d3", highlightbackground="#27b9f3", activebackground="#27b9f3", fg="white",
                font="Mono 12 bold").pack(side=LEFT, padx=3)
-    D = Button(frameButtons, text='RESET', command=lambda : reset(strlines), highlightthickness=0, bg="#d32a2f", fg="white",
+    D = Button(frameButtons, text='RESET', command=lambda: reset(strlines), highlightthickness=0, bg="#d32a2f", highlightbackground="#f6242b", activebackground="#f6242b",
+               fg="white",
                font="Mono 12 bold").pack(side=LEFT, padx=3)
 
     results = Frame(window, bd=1, padx=7, pady=5, bg="#687382")
@@ -92,11 +95,23 @@ if __name__ == '__main__':
 
     fconfig = Frame(window, bd=1, padx=7, pady=5, bg="#687382")
     fconfig.pack(side=TOP, expand=True)
-
+    """
     Scale(fconfig, orient='horizontal', from_=0, to=100,
           variable=speed,
           highlightthickness=0,
           label='Speed:', bg="#687382").pack(side=LEFT)
+    """
+    Label(fconfig, text="Speed", bg="#687382").pack(side=LEFT)
+    _vals = [30, 6, 0]
+    _etiq = ["x1", "x5", "inf"]
+    _col = ['#4bc04b', '#4c4bc0', '#c04b4b']
+    for i in range(len(_vals)):
+        b = Radiobutton(fconfig, variable=speed, indicatoron=0, text=_etiq[i], value=_vals[i], highlightthickness=0,
+                        bg="#687382", highlightbackground=_col[i], activebackground=_col[i], selectcolor=_col[i], padx=5, pady=5, borderwidth=2, relief="flat")
+        if i==0:
+            b.invoke()
+        b.pack(side=LEFT, expand=True)
+
     Scale(fconfig, orient='horizontal', from_=1, to=5,
           highlightthickness=0,
           variable=infos['memcost'],

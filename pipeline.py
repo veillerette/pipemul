@@ -17,7 +17,7 @@ from tkinter import *
 from parsing import *
 from processor import Processor
 
-base_title = "Simul RISC with ASM"
+base_title = "Pipeline RISC simulator"
 window = Tk()
 window.title(base_title)
 window.configure(background="#464956")
@@ -48,6 +48,7 @@ canvas.pack(side=LEFT, expand=True, fill=BOTH)
 infos = {'i': 0, 'nb': 0, 'staled': 0, 'mem': 0, 'r': [], 'memcost': IntVar(value=1), "cycles": IntVar()}
 stalledPerIns = {}
 cpu = Processor()
+cpuWindow = None
 infosGraphic = {'i': StringVar(), 'nb': StringVar(), 'staled': StringVar(), 'mem': StringVar(), "cycles": StringVar()}
 cpuGraphic = [StringVar(value="") for i in range(len(cpu.counters) + 2)]
 runned = False
@@ -365,11 +366,12 @@ def draw_asm_canvas(lines):
         for op in range(len(l)):
             if not l[op]:
                 continue
-            round_rectangle(canvas, tpos[0] - 5 + ((maxi0 + 10) * (op >= 1)) + ((maxi1 + 10) * (op >= 2)), tpos[1] - 9,
+            round_rectangle(canvas, tpos[0] - 5 + ((maxi0 + 10) * (op >= 1)) + ((maxi1 + 10) * (op >= 2)), tpos[1] - 10,
                             tpos[0] + 11 * len(l[op]) + 2 + ((maxi0 + 10) * (op >= 1)) + (
                                     (maxi1 + 10) * (op >= 2)), tpos[1] + 11, r=10, fill=bgc, width=0)
             canvas.create_text(tpos[0] + ((maxi0 + 10) * (op >= 1)) + ((maxi1 + 10) * (op >= 2)), tpos[1], fill=select_color_op(l[op]),
                                font="Mono 13", anchor="w", stipple='gray25', text=l[op])
+
         # canvas.create_line(10, tpos[1] + 6, 260, tpos[1] + 6, fill='gray70')
 
         tostr = str(stalledPerIns[i]) if i in stalledPerIns else "0"

@@ -41,6 +41,9 @@ def is_int(str):
     except ValueError:
         return False
 
+def refactor_op(op):
+    return 'm[' + str(op[1:]) + ']' if len(op)>=2 and op[0] == 'm' and op[:3]!="mov" else op
+
 def transform_mem(mem):
     return "m" + str(is_mem(mem))
 
