@@ -54,7 +54,6 @@ if __name__ == '__main__':
     frameButtons = Frame(window, bd=1, relief=SUNKEN, padx=7, pady=5, bg="#687382")
     frameButtons.pack(side=TOP)
 
-    testB = Button(window, text="TEST WIN", command=lambda: Tk()).pack(side=LEFT, expand="True")
 
     A = Button(frameButtons, text='ONE STEP',
                command=lambda: next_step(blocs, lines, strlines), highlightthickness=0, bg="#2aa1d3", highlightbackground="#27b9f3", activebackground="#27b9f3", fg="#ffffff",
@@ -81,8 +80,7 @@ if __name__ == '__main__':
     resultsCPU = Frame(window, bd=1, padx=7, pady=5, bg="#687382")
     resultsCPU.pack(side=TOP, expand=True)
 
-    tmp = Label(resultsCPU, text="CPU stats", bg="#687382")
-    tmp.pack(side=TOP)
+    Button(resultsCPU, text="CPU Stats", command=lambda : cpu_win.onClick(), highlightthickness=0, bg="#2aa1d3", highlightbackground="#27b9f3", activebackground="#27b9f3", fg="#ffffff").pack(side=TOP)
 
     for cpu_cnt in cpuGraphic[:-1]:
         Label(resultsCPU, textvariable=cpu_cnt, padx=5, pady=3, bg="#687382").pack(side=TOP, expand=True)
@@ -136,3 +134,4 @@ if __name__ == '__main__':
 
     reset(strlines)
     window.mainloop()
+    cpu_win.close()

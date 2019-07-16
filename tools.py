@@ -9,6 +9,8 @@ def is_reg(op):
         return False
     if "PTR" in op:
         return False
+    if len(op)==2:
+        return op
     return op[1:]
 
 
@@ -42,7 +44,7 @@ def is_int(str):
         return False
 
 def refactor_op(op):
-    return 'm[' + str(op[1:]) + ']' if len(op)>=2 and op[0] == 'm' and op[:3]!="mov" else op
+    return 'm[' + str(op[1:]) + ']' if len(op)>=2 and op[0] == 'm' and op[:3] not in ["mov", "mul"] else op
 
 def transform_mem(mem):
     return "m" + str(is_mem(mem))

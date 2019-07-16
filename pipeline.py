@@ -16,6 +16,7 @@
 from tkinter import *
 from parsing import *
 from processor import Processor
+from cpu_window import *
 
 base_title = "Pipeline RISC simulator"
 window = Tk()
@@ -48,7 +49,7 @@ canvas.pack(side=LEFT, expand=True, fill=BOTH)
 infos = {'i': 0, 'nb': 0, 'staled': 0, 'mem': 0, 'r': [], 'memcost': IntVar(value=1), "cycles": IntVar()}
 stalledPerIns = {}
 cpu = Processor()
-cpuWindow = None
+cpu_win = CPU_Window(cpu)
 infosGraphic = {'i': StringVar(), 'nb': StringVar(), 'staled': StringVar(), 'mem': StringVar(), "cycles": StringVar()}
 cpuGraphic = [StringVar(value="") for i in range(len(cpu.counters) + 2)]
 runned = False
@@ -288,6 +289,7 @@ def next_step(blocs, lines, strlines):
     if runned and speed.get() <= 1:
         return
     draw_asm_canvas(strlines)
+    cpu_win.maj()
 
 
 def construct_blocs(path):
@@ -336,6 +338,15 @@ def select_color_op(op):
     return "#ffffff"
 
 
+def write_text_with_rect(tpos, maxi0, maxi1, text, op, bgc="#4d4d4d", font="Mono 13"):
+    round_rectangle(canvas, tpos[0] - 5 + ((maxi0 + 10) * (op >= 1)) + ((maxi1 + 10) * (op >= 2)), tpos[1] - 10,
+                    tpos[0] + 11 * len(text) + 3 + ((maxi0 + 10) * (op >= 1)) + (
+                            (maxi1 + 10) * (op >= 2)), tpos[1] + 11, r=10, fill=bgc, width=0)
+    canvas.create_text(tpos[0] + ((maxi0 + 10) * (op >= 1)) + ((maxi1 + 10) * (op >= 2)), tpos[1],
+                       fill=select_color_op(text),
+                       font=font, anchor="w", stipple='gray25', text=text)
+
+
 def draw_asm_canvas(lines):
     global window
     global canvas
@@ -357,25 +368,17 @@ def draw_asm_canvas(lines):
 
     for i in range(len(lines)):
         tpos = posLines[i]
-        bgc = "#4d4d4d"
-        if infos['i'] == i:
-            bgc = '#303030'
+        bgc = "#303030" if infos['i'] == i else "#4d4d4d"
 
         canvas.create_text(10, tpos[1], fill="black", font="Mono 9 italic", justify=LEFT, text=str(i))
         l = lines[i].split(" ")
         for op in range(len(l)):
             if not l[op]:
                 continue
-            round_rectangle(canvas, tpos[0] - 5 + ((maxi0 + 10) * (op >= 1)) + ((maxi1 + 10) * (op >= 2)), tpos[1] - 10,
-                            tpos[0] + 11 * len(l[op]) + 2 + ((maxi0 + 10) * (op >= 1)) + (
-                                    (maxi1 + 10) * (op >= 2)), tpos[1] + 11, r=10, fill=bgc, width=0)
-            canvas.create_text(tpos[0] + ((maxi0 + 10) * (op >= 1)) + ((maxi1 + 10) * (op >= 2)), tpos[1], fill=select_color_op(l[op]),
-                               font="Mono 13", anchor="w", stipple='gray25', text=l[op])
-
-        # canvas.create_line(10, tpos[1] + 6, 260, tpos[1] + 6, fill='gray70')
+            write_text_with_rect(tpos, maxi0, maxi1, l[op], op, bgc)
 
         tostr = str(stalledPerIns[i]) if i in stalledPerIns else "0"
-        canvas.create_text(400, tpos[1], fill="black", font="Mono 9", justify=RIGHT, text=tostr)
+        write_text_with_rect((400, tpos[1]), 0, 0, tostr, 0)
 
     for ins in range(len(pipeline)):
         tostr = get_str_state_pipeline(ins)
