@@ -30,7 +30,6 @@ if __name__ == '__main__':
     window.title(base_title + " : " + sys.argv[1])
 
     strlines = list(map(lambda i: ' '.join(list(map(lambda j: str(j), i))), lines))
-    reset()
 
     ######################## TEXT INJECTION ########################
     ### 2 <= TEXT_SIZE + |pattern| + 1 < Processor.DEFAULT_MAX_MEMORY
@@ -64,7 +63,7 @@ if __name__ == '__main__':
                highlightthickness=0, bg="#2aa1d3", fg="white", font="Mono 12 bold").pack(side=LEFT, padx=3)
     C = Button(frameButtons, text='PAUSE', command=lambda: stop(), highlightthickness=0, bg="#2aa1d3", fg="white",
                font="Mono 12 bold").pack(side=LEFT, padx=3)
-    D = Button(frameButtons, text='RESET', command=reset, highlightthickness=0, bg="#d32a2f", fg="white",
+    D = Button(frameButtons, text='RESET', command=lambda : reset(strlines), highlightthickness=0, bg="#d32a2f", fg="white",
                font="Mono 12 bold").pack(side=LEFT, padx=3)
 
     results = Frame(window, bd=1, padx=7, pady=5, bg="#687382")
@@ -119,4 +118,6 @@ if __name__ == '__main__':
 
     draw_asm = lambda: draw_asm_canvas(strlines)
     draw_asm()
+
+    reset(strlines)
     window.mainloop()

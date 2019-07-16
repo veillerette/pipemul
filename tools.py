@@ -34,6 +34,12 @@ def is_flag(instr):
         return int(instr[2:-1])
     return int(instr[2:])
 
+def is_int(str):
+    try:
+        int(str)
+        return True
+    except ValueError:
+        return False
 
 def transform_mem(mem):
     return "m" + str(is_mem(mem))
