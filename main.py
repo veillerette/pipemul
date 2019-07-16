@@ -60,7 +60,7 @@ if __name__ == '__main__':
                font="Mono 12 bold").pack(side=LEFT,
                                          padx=3)
     B = Button(frameButtons, text='RUN',
-               command=lambda: start(blocs, lines, dic, lambda: randint(0, 100) >= prob.get() * 100),
+               command=lambda: start(blocs, lines, dic, lambda: randint(0, 100) >= prob.get() * 100, strlines),
                highlightthickness=0, bg="#2aa1d3", highlightbackground="#27b9f3", activebackground="#27b9f3", fg="white", font="Mono 12 bold").pack(side=LEFT, padx=3)
     C = Button(frameButtons, text='PAUSE', command=lambda: stop(), highlightthickness=0, bg="#2aa1d3", highlightbackground="#27b9f3", activebackground="#27b9f3", fg="white",
                font="Mono 12 bold").pack(side=LEFT, padx=3)

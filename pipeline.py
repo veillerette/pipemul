@@ -36,8 +36,7 @@ vbar.pack(side=RIGHT, fill=Y)
 vbar.config(command=canvas.yview)
 canvas.config(yscrollcommand=vbar.set)
 
-# TODO : must be tested on Windows. <3
-canvas.bind("<MouseWheel>", lambda event: canvas.yview_scroll((1 if event.delta else -1), "units"))
+canvas.bind("<MouseWheel>", lambda event: canvas.yview_scroll((-1 if event.delta > 0 else 1), "units"))
 
 canvas.bind("<Button-4>", lambda event: canvas.yview_scroll(-1, "units"))
 canvas.bind("<Button-5>", lambda event: canvas.yview_scroll(1, "units"))
@@ -104,19 +103,18 @@ def reset(strlines):
     draw_asm_canvas(strlines)
 
 
-def run(blocs, lines, dic_flags, take_cmp):
+def run(blocs, lines, dic_flags, take_cmp, strlines):
     if not runned:
         return
-    strlines = list(map(lambda i: ' '.join(list(map(lambda j: str(j), i))), lines))
     next_step(blocs, lines, strlines)
-    window.after(speed.get(), lambda: run(blocs, lines, dic_flags, take_cmp))
+    window.after(speed.get(), lambda: run(blocs, lines, dic_flags, take_cmp, strlines))
 
 
-def start(blocs, lines, dic_flags, take_cmp):
+def start(blocs, lines, dic_flags, take_cmp, strlines):
     global runned
     if not runned:
         runned = True
-        run(blocs, lines, dic_flags, take_cmp)
+        run(blocs, lines, dic_flags, take_cmp, strlines)
 
 
 def stop():
@@ -344,7 +342,7 @@ def write_text_with_rect(tpos, maxi0, maxi1, text, op, bgc="#4d4d4d", font="Mono
                             (maxi1 + 10) * (op >= 2)), tpos[1] + 11, r=10, fill=bgc, width=0)
     canvas.create_text(tpos[0] + ((maxi0 + 10) * (op >= 1)) + ((maxi1 + 10) * (op >= 2)), tpos[1],
                        fill=select_color_op(text),
-                       font=font, anchor="w", stipple='gray25', text=text)
+                       font=font, anchor="w", text=text)
 
 
 def draw_asm_canvas(lines):
