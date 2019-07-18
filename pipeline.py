@@ -13,9 +13,7 @@
 # 	- bloc : bloc RISC de l'instruction : [F, D, E, M, W]
 #	- line : ligne ASM simplifiée correspondante
 
-from tkinter import *
 from parsing import *
-from processor import Processor
 from cpu_window import *
 
 base_title = "Pipeline RISC simulator"
@@ -25,10 +23,16 @@ window.configure(background="#464956")
 
 CVS_WIDTH = 500
 CVS_HEIGHT = 2000
+CVS_HEADER_HEIGHT = 35
 
-frameCanvas = Frame(window, width=CVS_WIDTH)
-frameCanvas.pack(side=LEFT, )
-canvas = Canvas(frameCanvas, width=CVS_WIDTH, height=window.maxsize()[1] - 50, bg='#7c818b', highlightthickness=0,
+frameCanvas = Frame(window, width=CVS_WIDTH, padx=0)
+frameCanvas.pack(side=LEFT)
+
+canvas_header = Canvas(frameCanvas, bg='#7c818b', highlightthickness=0, height=CVS_HEADER_HEIGHT, relief="flat",
+                       width=CVS_WIDTH)
+canvas_header.pack(side=TOP, fill=BOTH, expand=True)
+
+canvas = Canvas(frameCanvas, bg='#7c818b', highlightthickness=0,
                 scrollregion=(0, 0, CVS_WIDTH, CVS_HEIGHT))
 
 vbar = Scrollbar(frameCanvas, orient=VERTICAL)
@@ -41,9 +45,9 @@ canvas.bind("<MouseWheel>", lambda event: canvas.yview_scroll((-1 if event.delta
 canvas.bind("<Button-4>", lambda event: canvas.yview_scroll(-1, "units"))
 canvas.bind("<Button-5>", lambda event: canvas.yview_scroll(1, "units"))
 
-canvas.config(width=CVS_WIDTH, height=CVS_HEIGHT)
+canvas.config(width=CVS_WIDTH, height=window.maxsize()[1] - 50 - CVS_HEADER_HEIGHT, borderwidth=0)
 
-canvas.pack(side=LEFT, expand=True, fill=BOTH)
+canvas.pack(side=LEFT, fill=BOTH, expand=True)
 
 infos = {'i': 0, 'nb': 0, 'staled': 0, 'mem': 0, 'r': [], 'memcost': IntVar(value=1), "cycles": IntVar()}
 stalledPerIns = {}
@@ -336,13 +340,35 @@ def select_color_op(op):
     return "#ffffff"
 
 
-def write_text_with_rect(tpos, maxi0, maxi1, text, op, bgc="#4d4d4d", font="Mono 13"):
-    round_rectangle(canvas, tpos[0] - 5 + ((maxi0 + 10) * (op >= 1)) + ((maxi1 + 10) * (op >= 2)), tpos[1] - 10,
-                    tpos[0] + 11 * len(text) + 3 + ((maxi0 + 10) * (op >= 1)) + (
-                            (maxi1 + 10) * (op >= 2)), tpos[1] + 11, r=10, fill=bgc, width=0)
+def write_text_with_rect(tpos, maxi0, maxi1, text, op, bgc="#4d4d4d", font="Monospace 13", anchor="center"):
+    shift = 0
+    if anchor == "center":
+        shift = 11 * (len(text) / 2) - 1
+    round_rectangle(canvas, tpos[0] - 5 + ((maxi0 + 10) * (op >= 1)) + ((maxi1 + 10) * (op >= 2)) - shift,
+                    tpos[1] - 10,
+                    tpos[0] + 11 * len(text) + 3 - (5 if '[' in text else 0) + ((maxi0 + 10) * (op >= 1))
+                    + ((maxi1 + 10) * (op >= 2)) - shift,
+                    tpos[1] + 11, r=10, fill=bgc, width=0)
     canvas.create_text(tpos[0] + ((maxi0 + 10) * (op >= 1)) + ((maxi1 + 10) * (op >= 2)), tpos[1],
                        fill=select_color_op(text),
-                       font=font, anchor="w", text=text)
+                       font=font, text=text, anchor=anchor)
+
+
+def draw_header(maxis):
+
+    canvas_header.delete("all")
+
+    canvas_header.create_text(5, 16, fill="black", font="verdana 11 bold", anchor="w", text="n°")
+    canvas_header.create_text(80 + maxis[0] + maxis[1] // 2, 16, fill="black", font="Mono 12 bold", anchor="center",
+                              text="Instruction")
+    canvas_header.create_text(80 + sum(maxis) + 75, 16, fill="black", font="Mono 12 bold", anchor="center", text="Pipeline")
+    canvas_header.create_text(80 + sum(maxis) + 75  + 11 * 5 + 50, 16, fill="black", font="Mono 12 bold", anchor="center", text="Stalled")
+
+
+    canvas_header.create_line(0, CVS_HEADER_HEIGHT - 2, CVS_WIDTH, CVS_HEADER_HEIGHT - 2, smooth=1, width=1,
+                              fill="#4d4d4d")
+    canvas_header.create_line(0, CVS_HEADER_HEIGHT - 1, CVS_WIDTH, CVS_HEADER_HEIGHT - 1, smooth=1, width=1,
+                              fill="#8d8d8d")
 
 
 def draw_asm_canvas(lines):
@@ -361,8 +387,11 @@ def draw_asm_canvas(lines):
 
     # canvas.create_line(150, 10, 150, posLines[len(lines) - 1][1] + 10)
 
-    maxi0 = max([11 * len(l[0]) for l in list(map(lambda i: i.split(" "), lines))])
-    maxi1 = max([11 * len(l[1]) for l in list(map(lambda i: i.split(" "), lines))])
+    maxi0 = max([11 * len(l[0]) + 3 for l in list(map(lambda i: i.split(" "), lines))])
+    maxi1 = max([11 * len(l[1]) + 3 for l in list(map(lambda i: i.split(" "), lines))])
+    maxi2 = max([11 * len(l[2]) + 3 if len(l) == 3 else 0 for l in list(map(lambda i: i.split(" "), lines))])
+
+    draw_header((maxi0, maxi1, maxi2))
 
     for i in range(len(lines)):
         tpos = posLines[i]
@@ -373,17 +402,17 @@ def draw_asm_canvas(lines):
         for op in range(len(l)):
             if not l[op]:
                 continue
-            write_text_with_rect(tpos, maxi0, maxi1, l[op], op, bgc)
+            write_text_with_rect(tpos, maxi0, maxi1, l[op], op, bgc, anchor="w")
 
         tostr = str(stalledPerIns[i]) if i in stalledPerIns else "0"
-        write_text_with_rect((400, tpos[1]), 0, 0, tostr, 0)
+        write_text_with_rect(((80 + maxi0 + maxi1 + maxi2 + 75)+11*5+50, tpos[1]), 0, 0, tostr, 0)
 
     for ins in range(len(pipeline)):
         tostr = get_str_state_pipeline(ins)
         if not tostr:
             continue
         pos = posLines[pipeline[ins][0]]
-        canvas.create_text(300, pos[1], fill="black", font="Mono 14", justify=LEFT, text=tostr)
+        write_text_with_rect((80 + maxi0 + maxi1 + maxi2 + 75, pos[1]), maxi0, maxi1, tostr, 0)
 
     maj_graphical_cpu()
 

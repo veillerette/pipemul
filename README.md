@@ -12,8 +12,8 @@ a RISC pipeline simulator of NASM file including :
 So there is not a real *stack* and *call* instruction.
 
 ## Requirement
- * `Linux`
- * `python >= 3.5`
+ * `Linux` or `Windows`
+ * `python >= 3.5` or `pypy >= 3.5`
  * `tkinter >= 3.5`
 
 

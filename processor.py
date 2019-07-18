@@ -3,7 +3,7 @@ from tools import *
 
 class Processor:
     VALUES_RESERVED = 100
-    DEBUG = True
+    DEBUG = False
     DEFAULT_MAX_MEMORY = 10000
 
     def __init__(self, memory_size=DEFAULT_MAX_MEMORY):
@@ -149,7 +149,6 @@ class Processor:
     def reg_cmp(self, regA, regB):
         self.flags['cmp'] = (self.reg_get(regA) - self.reg_get(regB))
         self.i += 1
-        self.counters['ins'] += 1
 
     def mem_set(self, i, val):
         self.memory[i] = val
