@@ -1,6 +1,6 @@
 from pipeline import *
 from random import randint, seed
-
+import sys
 
 def kmp_table(s):
     T = [0 for _ in range(len(s) + 1)]
